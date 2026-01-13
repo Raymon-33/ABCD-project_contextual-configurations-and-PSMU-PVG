@@ -1,0 +1,70 @@
+Title: BCH Analysis with Covariates
+
+DATA: FILE IS WEIGHT4_MEANS.TXT;
+
+VARIABLE:
+Names are
+    PM_T2_1 
+    FC_T2 
+    DIS_T2
+    ENV_T2 
+    INV_T2 
+    PROSOCIA 
+    RULEBREA
+    PNH_T2 
+    AGE 
+    GENDER  
+    PEDU 
+    MARITAL 
+    INCOME
+    BLACK 
+    ASIAN 
+    OTHER 
+    ETHNICIT
+    INT_T2 
+    EXT_T2
+    INT_T3 
+    EXT_T3
+    INT_T4 
+    EXT_T4
+    T2_SMA
+    VGA_T2
+    T3_SMA
+    VGA_T3 
+    T4_SMA 
+    VGA_T4
+    BCHW1 
+    BCHW2 
+    BCHW3 
+    BCHW4 
+    ID;
+
+USEVARIABLES ARE
+    BCHW1
+    BCHW2
+    BCHW3
+    BCHW4;
+
+AUXILIARY = 
+    INT_T3 (BCH)
+    EXT_T3 (BCH)
+    INT_T4 (BCH)
+    EXT_T4 (BCH)
+    T3_SMA (BCH)
+    VGA_T3 (BCH)
+    T4_SMA (BCH)
+    VGA_T4 (BCH);
+
+missing are *;
+Classes = c(4);  
+training = BCHW1-BCHW4 (BCH);
+
+
+ANALYSIS:
+Type = Mixture;
+ESTIMATOR = ML;
+
+MODEL:
+%OVERALL%
+
+OUTPUT: TECH11 TECH14;                                                                                                                                                                                                                    
