@@ -1,0 +1,217 @@
+Title: BCH Analysis with Covariates
+
+DATA: FILE IS med_WEIGHT4.TXT;
+
+VARIABLE:
+Names are
+    PM_T2_1    
+    FC_T2      
+    DIS_T2     
+    ENV_T2     
+    INV_T2     
+    PROSOCIA   
+    RULEBREA   
+    PNH_T2     
+    AGE        
+    GENDER     
+    PEDU       
+    MARITAL    
+    INCOME     
+    BLACK      
+    ASIAN      
+    OTHER      
+    ETHNICIT   
+    INT_T2     
+    EXT_T2     
+    INT_T3     
+    EXT_T3     
+    T2_SMA     
+    VGA_T2     
+    T4_SMA     
+    VGA_T4     
+    BCHW1      
+    BCHW2      
+    BCHW3      
+    BCHW4      
+    ID;
+
+USEVARIABLES ARE
+    AGE
+    GENDER
+    PEDU
+    MARITAL
+    INCOME
+    BLACK
+    ASIAN
+    OTHER
+    ETHNICIT
+    INT_T2
+    EXT_T2
+    INT_T3
+    EXT_T3
+    T2_SMA
+    VGA_T2
+    T4_SMA
+    VGA_T4
+    BCHW1
+    BCHW2
+    BCHW3
+    BCHW4;
+
+missing are *;
+
+Classes = c(4);  
+training = BCHW1-BCHW4 (BCH);
+
+ANALYSIS:
+Type = Mixture;
+ESTIMATOR = ML;
+BOOTSTRAP = 5000;
+
+MODEL:
+  %OVERALL%
+    T4_SMA ON INT_T3 (si_b);
+    T4_SMA ON EXT_T3 (se_b);
+    VGA_T4 ON INT_T3 (vi_b);
+    VGA_T4 ON EXT_T3 (ve_b);
+    T4_SMA on T2_SMA AGE GENDER PEDU MARITAL INCOME BLACK ASIAN OTHER ETHNICIT;
+    VGA_T4 on VGA_T2 AGE GENDER PEDU MARITAL INCOME BLACK ASIAN OTHER ETHNICIT;
+    INT_T3 on INT_T2;
+    EXT_T3 on EXT_T2;
+    VGA_T2 T2_SMA INT_T2 EXT_T2;
+
+  %C#1%
+    [INT_T3] (int_a1);
+    [EXT_T3] (ext_a1);
+    [T4_SMA] (sma_y1);
+    [VGA_T4] (vga_y1);
+    INT_T3 (var_int1);
+    EXT_T3 (var_ext1);
+    T4_SMA (var_sma1);
+    VGA_T4 (var_vga1);
+
+  %C#2%
+    [INT_T3] (int_a2);
+    [EXT_T3] (ext_a2);
+    [T4_SMA] (sma_y2);
+    [VGA_T4] (vga_y2);
+    INT_T3 (var_int2);
+    EXT_T3 (var_ext2);
+    T4_SMA (var_sma2);
+    VGA_T4 (var_vga2);
+
+  %C#3%
+    [INT_T3] (int_a3);
+    [EXT_T3] (ext_a3);
+    [T4_SMA] (sma_y3);
+    [VGA_T4] (vga_y3);
+    INT_T3 (var_int3);
+    EXT_T3 (var_ext3);
+    T4_SMA (var_sma3);
+    VGA_T4 (var_vga3);
+
+  %C#4%
+    [INT_T3] (int_a4);
+    [EXT_T3] (ext_a4);
+    [T4_SMA] (sma_y4);
+    [VGA_T4] (vga_y4);
+    INT_T3 (var_int4);
+    EXT_T3 (var_ext4);
+    T4_SMA (var_sma4);
+    VGA_T4 (var_vga4);
+
+MODEL CONSTRAINT:
+
+  NEW(int_a13 int_a23 int_a43
+      ext_a13 ext_a23 ext_a43
+      sma_y13 sma_y23 sma_y43
+      vga_y13 vga_y23 vga_y43
+      ind_is13 ind_is23 ind_is43
+      ind_es13 ind_es23 ind_es43
+      ind_iv13 ind_iv23 ind_iv43
+      ind_ev13 ind_ev23 ind_ev43);
+
+
+  int_a13 = int_a1 - int_a3;  
+  int_a23 = int_a2 - int_a3;  
+  int_a43 = int_a4 - int_a3;
+  ext_a13 = ext_a1 - ext_a3;  
+  ext_a23 = ext_a2 - ext_a3;  
+  ext_a43 = ext_a4 - ext_a3;
+
+
+  sma_y13 = sma_y1 - sma_y3;  
+  sma_y23 = sma_y2 - sma_y3;  
+  sma_y43 = sma_y4 - sma_y3;
+  vga_y13 = vga_y1 - vga_y3;  
+  vga_y23 = vga_y2 - vga_y3;  
+  vga_y43 = vga_y4 - vga_y3;
+
+
+  ind_is13 = int_a13 * si_b;  
+  ind_is23 = int_a23 * si_b;  
+  ind_is43 = int_a43 * si_b;
+  ind_es13 = ext_a13 * se_b;  
+  ind_es23 = ext_a23 * se_b;  
+  ind_es43 = ext_a43 * se_b;
+  ind_iv13 = int_a13 * vi_b;  
+  ind_iv23 = int_a23 * vi_b;  
+  ind_iv43 = int_a43 * vi_b;
+  ind_ev13 = ext_a13 * ve_b;  
+  ind_ev23 = ext_a23 * ve_b;  
+  ind_ev43 = ext_a43 * ve_b;
+
+
+  NEW(sint_a13 sint_a23 sint_a43
+      sext_a13 sext_a23 sext_a43
+      ssma_y13 ssma_y23 ssma_y43
+      svga_y13 svga_y23 svga_y43
+      sind_is13 sind_is23 sind_is43
+      sind_es13 sind_es23 sind_es43
+      sind_iv13 sind_iv23 sind_iv43
+      sind_ev13 sind_ev23 sind_ev43
+      ssi_b sse_b svi_b sve_b);
+
+
+  sint_a13 = (int_a1 - int_a3) / sqrt( (var_int1 + var_int3)/2 );
+  sint_a23 = (int_a2 - int_a3) / sqrt( (var_int2 + var_int3)/2 );
+  sint_a43 = (int_a4 - int_a3) / sqrt( (var_int4 + var_int3)/2 );
+
+  sext_a13 = (ext_a1 - ext_a3) / sqrt( (var_ext1 + var_ext3)/2 );
+  sext_a23 = (ext_a2 - ext_a3) / sqrt( (var_ext2 + var_ext3)/2 );
+  sext_a43 = (ext_a4 - ext_a3) / sqrt( (var_ext4 + var_ext3)/2 );
+
+
+  ssma_y13 = (sma_y1 - sma_y3) / sqrt( (var_sma1 + var_sma3)/2 );
+  ssma_y23 = (sma_y2 - sma_y3) / sqrt( (var_sma2 + var_sma3)/2 );
+  ssma_y43 = (sma_y4 - sma_y3) / sqrt( (var_sma4 + var_sma3)/2 );
+
+  svga_y13 = (vga_y1 - vga_y3) / sqrt( (var_vga1 + var_vga3)/2 );
+  svga_y23 = (vga_y2 - vga_y3) / sqrt( (var_vga2 + var_vga3)/2 );
+  svga_y43 = (vga_y4 - vga_y3) / sqrt( (var_vga4 + var_vga3)/2 );
+
+
+  sind_is13 = (int_a13 * si_b) / sqrt( (var_sma1 + var_sma3)/2 );
+  sind_is23 = (int_a23 * si_b) / sqrt( (var_sma2 + var_sma3)/2 );
+  sind_is43 = (int_a43 * si_b) / sqrt( (var_sma4 + var_sma3)/2 );
+
+  sind_es13 = (ext_a13 * se_b) / sqrt( (var_sma1 + var_sma3)/2 );
+  sind_es23 = (ext_a23 * se_b) / sqrt( (var_sma2 + var_sma3)/2 );
+  sind_es43 = (ext_a43 * se_b) / sqrt( (var_sma4 + var_sma3)/2 );
+
+  sind_iv13 = (int_a13 * vi_b) / sqrt( (var_vga1 + var_vga3)/2 );
+  sind_iv23 = (int_a23 * vi_b) / sqrt( (var_vga2 + var_vga3)/2 );
+  sind_iv43 = (int_a43 * vi_b) / sqrt( (var_vga4 + var_vga3)/2 );
+
+  sind_ev13 = (ext_a13 * ve_b) / sqrt( (var_vga1 + var_vga3)/2 );
+  sind_ev23 = (ext_a23 * ve_b) / sqrt( (var_vga2 + var_vga3)/2 );
+  sind_ev43 = (ext_a43 * ve_b) / sqrt( (var_vga4 + var_vga3)/2 );
+
+
+  ssi_b = si_b * sqrt(var_int3) / sqrt( (var_sma1 + var_sma3)/2 ); 
+  sse_b = se_b * sqrt(var_ext3) / sqrt( (var_sma1 + var_sma3)/2 );
+  svi_b = vi_b * sqrt(var_int3) / sqrt( (var_vga1 + var_vga3)/2 );
+  sve_b = ve_b * sqrt(var_ext3) / sqrt( (var_vga1 + var_vga3)/2 );
+
+OUTPUT:
+  CINTERVAL(BCBOOTSTRAP);                                                                                                          
