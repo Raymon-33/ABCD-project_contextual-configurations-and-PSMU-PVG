@@ -1,0 +1,63 @@
+TITLE: lpa test
+
+DATA: FILE IS oct21id.txt;
+
+VARIABLE:   NAMES = age gender pedu marital
+income black asian other
+Ethnicity T2_SMA T3_SMA T4_SMA
+Int_T0 Int_T1 Int_T2 Int_T3
+Int_T4 Ext_T0 Ext_T1 Ext_T2
+Ext_T3 Ext_T4 T0_BIS T1_BIS
+T2_BIS T3_BIS T4_BIS T0_BAS
+T1_BAS T2_BAS T3_BAS T4_BAS
+Prosocial_T0 Prosocial_T1 Prosocial_T2 Prosocial_T3
+Prosocial_T4 Rulebreak_T0 Rulebreak_T1 Rulebreak_T2
+Rulebreak_T3 Rulebreak_T4 PM_T0 PM_T1
+PM_T2 PM_T2_1 PM_T3 PM_T4 FC_T0
+FC_T1 FC_T2 FC_T3 FC_T4
+DIS_T0 DIS_T0_R DIS_T1 DIS_T2 DIS_T2_R DIS_T3
+DIS_T4 ENV_T0 ENV_T1 ENV_T2
+ENV_T3 ENV_T4 INV_T0 INV_T1
+INV_T2 INV_T3 INV_T4 LPers_T0
+LPers_T1 LPers_T2 LPers_T3
+LPers_T4 LPlan_T0 LPlan_T1 LPlan_T2
+LPlan_T3 LPlan_T4 NU_T0 NU_T1
+NU_T2 NU_T3 NU_T4 PU_T0
+PU_T1 PU_T2 PU_T3
+PU_T4 SS_T0 SS_T1 SS_T2
+SS_T3 SS_T4 VGA_T2 VGA_T3
+VGA_T4 PNH_T2 PNH_T3 PNH_T4 id;
+
+            USEVARIABLES = 
+                    PM_T2_1 FC_T2 DIS_T2 
+                    ENV_T2 INV_T2 Prosocial_T2
+                    Rulebreak_T2 PNH_T2;
+
+                    MISSING = ALL (-9999); 
+
+  Classes = c(4);
+
+
+AUXILIARY = AGE GENDER
+pedu marital
+income black asian other
+Ethnicity T2_SMA T3_SMA T4_SMA;
+
+idvariable = ID;
+
+DEFINE:
+    STANDARDIZE PM_T2_1 FC_T2 DIS_T2 
+                ENV_T2 INV_T2 Prosocial_T2
+                Rulebreak_T2 PNH_T2;
+
+
+  Analysis:
+  Type = Mixture;
+  !Starts = 50 2;
+
+  Model:
+  savedata:file = weight4.txt;
+  
+  save=bchweights;
+                                            
+output:tech11 tech10 tech14;
